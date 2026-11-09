@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>D&amp;D: Designers &amp; Deadlines – Game Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --board:#151829; --board2:#1F2338; --board3:#2A2F4A; --ink:#EEF0FA; --muted:#A6ABC8; --card:#FFFFFF; --cardink:#171A2B; --cardmuted:#5D6278;
+  --designer:#7B61FF; --designer-soft:#EEEAFF; --museum:#14A3A5; --museum-soft:#DDF4F3;
+  --deadline:#FFB020; --bad:#E5344B; --bad-soft:#FDE6E9; --good:#3DBE7E;
+  --font:"Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+:root{box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0; background:var(--board); color:var(--ink); font-family:var(--font); display:flex; flex-direction:column; overflow:hidden}
+button,input,select{font:inherit; color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--deadline); outline-offset:2px}
+[hidden]{display:none !important}
+
+.top{display:flex; align-items:center; gap:14px; padding:10px 22px; background:var(--board2)}
+.logo{font-weight:800; font-size:20px; letter-spacing:-.02em; margin-right:auto}
+.logo span{font-weight:500; color:var(--muted); font-size:14px; margin-left:8px}
+.top .clock{font-variant-numeric:tabular-nums; color:var(--muted); font-size:15px; border:1px solid var(--board3); padding:5px 12px; border-radius:999px; background:transparent}
+.phase-name{font-weight:700; color:var(--deadline); font-size:15px}
+.tbar{height:8px; background:var(--board2)}
+.tbar i{display:block; height:100%; background:var(--deadline); transform-origin:left; transform:scaleX(0); transition:transform .25s linear}
+.tbar.hot i{background:var(--bad)}
+
+.stage{flex:1; min-height:0; overflow:auto; padding:clamp(14px,2.2vw,40px) clamp(16px,3.6vw,64px); font-size:clamp(13px, .68vw + .68vh, 25px)}
+.head{display:flex; gap:1em; align-items:flex-start; margin-bottom:1em}
+.head h1{font-size:2.6em; line-height:1; letter-spacing:-.03em; margin:0; font-weight:800}
+.head p{margin:.35em 0 0; color:var(--muted); font-size:1.08em; max-width:46em}
+.when{margin-left:auto; color:var(--muted); font-variant-numeric:tabular-nums; padding-top:.4em; white-space:nowrap}
+.timer{margin-left:auto; background:var(--deadline); color:var(--cardink); border-radius:16px; padding:.3em .7em .35em; text-align:right; min-width:5.6em}
+.timer b{display:block; font-size:3.3em; line-height:1; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.timer span{font-size:.8em; font-weight:700}
+.timer.hot,.timer.done{background:var(--bad); color:#fff}
+@media (prefers-reduced-motion:no-preference){ .timer.hot{animation:beat 1s ease-in-out infinite} }
+@keyframes beat{50%{transform:scale(1.05)}}
+
+.g{display:grid; gap:.7em}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:900px){ .g5,.g4{grid-template-columns:repeat(2,minmax(0,1fr))} .g3{grid-template-columns:1fr} body{overflow:auto} }
+.card{background:var(--card); color:var(--cardink); border-radius:10px; padding:.75em .85em}
+.muted{color:var(--cardmuted)}
+.tag{display:inline-block; border-radius:999px; padding:.08em .6em; font-size:.8em; font-weight:700; color:#fff; margin:0 .25em .25em 0}
+.ch-loc{background:#9A6412} .ch-dig{background:#1F4FD1} .ch-tat{background:#B4472F} .ch-acc{background:#7B4FB8} .ch-fam{background:#23804E} .ch-bre{background:#E9B520; color:#171A2B} .ch-soc{background:#C8323A}
+.res{display:inline-flex; align-items:center; gap:.18em; margin-right:.4em; font-weight:800; font-variant-numeric:tabular-nums}
+.res i{font-style:normal; display:inline-grid; place-items:center; width:1.5em; height:1.5em; border-radius:.35em; color:#fff; font-size:.85em}
+.res.S i,.res.C i{background:var(--designer)} .res.T i,.res.E i{background:var(--museum)}
+.pp{display:inline-block; background:var(--deadline); color:var(--cardink); border-radius:.35em; padding:.02em .45em; font-weight:800; font-variant-numeric:tabular-nums}
+
+/* welcome */
+.welcome{display:grid; grid-template-columns:1.3fr 1fr; gap:2.4em; align-items:start}
+.welcome h1{font-size:5.6em; line-height:.86; letter-spacing:-.05em; margin:0; font-weight:800}
+.welcome h1 em{font-style:normal; color:var(--designer)}
+.welcome h1 span{color:var(--deadline)}
+.welcome .tagline{font-size:1.5em; color:var(--muted); margin:.5em 0 1.2em}
+.count{display:flex; gap:.4em; flex-wrap:wrap}
+.count button{width:2.6em; height:2.6em; border-radius:.5em; border:2px solid var(--board3); background:var(--board2); font-size:1.2em; font-weight:800}
+.count button[aria-pressed="true"]{background:var(--deadline); color:var(--cardink); border-color:var(--deadline)}
+.names{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.4em; margin-top:.8em}
+.names input{width:100%; background:var(--board2); border:1px solid var(--board3); border-radius:.45em; padding:.35em .55em; font-size:.95em}
+.qr{background:var(--card); color:var(--cardink); border-radius:14px; padding:1em; text-align:center}
+.qr #qrbox{display:grid; place-items:center; min-height:200px}
+.qr #qrbox img,.qr #qrbox canvas{width:min(100%,260px) !important; height:auto !important}
+.qr p{margin:.5em 0 0}
+.qr .url{font-weight:700; word-break:break-all; font-size:.85em}
+.label{font-weight:700; margin:1.2em 0 .5em; font-size:1.1em}
+
+/* rules */
+.flow .card .n{font-size:2.2em; font-weight:800; color:var(--designer); line-height:1}
+.flow .card h3{margin:.2em 0; font-size:1.15em}
+.src{border-radius:10px; padding:.8em 1em}
+.src.d{background:var(--designer-soft); color:var(--cardink); border:3px solid var(--designer)}
+.src.m{background:var(--museum-soft); color:var(--cardink); border:3px solid var(--museum)}
+.src h3{margin:0 0 .3em; font-size:1.25em}
+.src.d h3{color:#4B33D6} .src.m h3{color:#0B7577}
+.formula{background:var(--deadline); color:var(--cardink); border-radius:10px; padding:.8em 1em}
+.formula b{display:block; font-size:1.7em; line-height:1.1}
+.levels{display:flex; gap:.5em}
+.levels .card{flex:1}
+.levels b{display:block; font-size:2em; line-height:1}
+.chips{display:flex; gap:.5em; flex-wrap:wrap; margin-top:.9em}
+.chips span{border:2px solid var(--board3); border-radius:999px; padding:.3em .9em; font-weight:700}
+.chips span.key{border-color:var(--deadline); color:var(--deadline)}
+
+/* cards */
+.dcard{border-top:.45em solid var(--designer)}
+.mcard{border-top:.45em solid var(--museum)}
+.dcard h3,.mcard h3{margin:.1em 0 .3em; font-size:1em; line-height:1.15}
+.dcard .num,.mcard .num{font-size:.8em; font-weight:700}
+.dcard .num{color:#4B33D6} .mcard .num{color:#0B7577}
+.dcard small,.mcard small{display:block; font-size:.75em; margin-top:.3em}
+.dcard,.mcard{position:relative}
+.owner{position:absolute; top:.5em; right:.5em; background:var(--cardink); color:#fff; border-radius:999px; padding:.05em .55em; font-size:.75em; font-weight:800; max-width:55%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.deal{margin-top:.9em; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.5em}
+.deal .card{padding:.5em .7em; font-size:.9em}
+.deal b{display:block}
+.btn{border:0; border-radius:.6em; padding:.55em 1em; font-weight:800; background:var(--deadline); color:var(--cardink); font-size:1em; display:inline-flex; align-items:center; gap:.4em}
+.btn.alt{background:transparent; color:var(--ink); border:2px solid var(--board3)}
+.btn svg{width:1.3em; height:1.3em}
+.btn:disabled{opacity:.4; cursor:not-allowed}
+
+/* inventory */
+.it{display:flex; flex-direction:column; gap:.3em; position:relative}
+.it .row{display:flex; justify-content:space-between; align-items:center}
+.it .k{font-size:1.8em; font-weight:800; line-height:1}
+.it h3{margin:0; font-size:.98em; line-height:1.15}
+.it .sub{font-size:.8em; font-style:italic}
+.it .eff{font-size:.8em; font-weight:600}
+.it .disc{font-size:.76em; margin-top:auto}
+.it.sab{background:var(--bad-soft); outline:3px dashed var(--bad); outline-offset:-3px}
+.it.sab .k{color:var(--bad)}
+.rules{display:flex; flex-wrap:wrap; gap:.3em 1em; margin-top:.8em; color:var(--muted); font-size:.9em}
+.rules b{color:var(--ink)}
+
+/* close */
+.phase{opacity:.4; transition:opacity .3s}
+.phase.on{opacity:1; box-shadow:0 0 0 4px var(--deadline)}
+.phase h3{font-size:1.5em; margin:.1em 0 .3em}
+.phase p{font-size:1.15em; margin:.3em 0}
+.strip{margin-top:1em; background:var(--board2); border-radius:10px; padding:.7em 1em; display:flex; flex-wrap:wrap; gap:.4em 1.2em; align-items:center}
+.strip b{color:var(--deadline)}
+
+/* draws */
+.draws{display:grid; gap:.7em; grid-template-columns:repeat(var(--cols,5),minmax(0,1fr))}
+.draw{min-height:9em; display:flex; flex-direction:column}
+.draw .team{font-size:.85em; font-weight:800; color:var(--cardmuted)}
+.draw h3{margin:.15em 0 .3em; font-size:1.08em; line-height:1.15}
+.draw p{margin:0; font-size:.85em}
+.draw.back{background:var(--board2); color:var(--muted); border:2px dashed var(--board3); justify-content:center; align-items:center; text-align:center}
+.draw.back .q{font-size:2.6em; font-weight:800; line-height:1}
+@media (prefers-reduced-motion:no-preference){ .draw.flip{animation:flip .5s cubic-bezier(.2,1.3,.4,1) both} }
+@keyframes flip{from{transform:rotateY(80deg) scale(.9); opacity:0}to{transform:none; opacity:1}}
+.legend{display:flex; gap:1.6em; flex-wrap:wrap; align-items:center; margin-top:.9em}
+.legend b{font-size:1.6em; margin-right:.25em}
+.plus{color:var(--good)} .minus{color:var(--bad)}
+
+/* scores */
+.scores{display:grid; grid-template-columns:repeat(var(--cols,5),minmax(0,1fr)); gap:.6em}
+.scores label{background:var(--board2); border-radius:10px; padding:.6em .8em; display:flex; flex-direction:column; gap:.3em; font-weight:700}
+.scores input{background:var(--card); color:var(--cardink); border:0; border-radius:.4em; padding:.3em .5em; font-size:1.6em; font-weight:800; width:100%; font-variant-numeric:tabular-nums}
+.podium{display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:.8em; align-items:end; margin-top:.4em}
+.pod{background:var(--board2); border-radius:14px 14px 0 0; text-align:center; padding:1em .6em}
+.pod .pl{font-size:1em; color:var(--muted); font-weight:700}
+.pod .nm{font-size:1.5em; font-weight:800; line-height:1.1; margin:.2em 0}
+.pod .pt{font-size:2.6em; font-weight:800; line-height:1; font-variant-numeric:tabular-nums}
+.pod.p1{background:var(--deadline); color:var(--cardink); min-height:15em; display:flex; flex-direction:column; justify-content:flex-end}
+.pod.p1 .pl{color:var(--cardink)}
+.pod.p1 .nm{font-size:2.2em}
+.pod.p1 .pt{font-size:4em}
+.pod.p2{min-height:11em} .pod.p3{min-height:9em}
+.pod.p2,.pod.p3{display:flex; flex-direction:column; justify-content:flex-end}
+@media (prefers-reduced-motion:no-preference){ .pod{animation:rise .7s cubic-bezier(.2,1.2,.4,1) both} .pod.p3{animation-delay:.2s} .pod.p2{animation-delay:.6s} .pod.p1{animation-delay:1.1s} }
+@keyframes rise{from{transform:translateY(40%); opacity:0}to{transform:none; opacity:1}}
+.rest{display:flex; flex-wrap:wrap; gap:.4em 1.2em; margin-top:1em; color:var(--muted); font-size:1.05em}
+
+/* debrief */
+.lesson{display:grid; grid-template-columns:auto 1fr; gap:1em; align-items:baseline; padding:.8em 0; border-top:2px solid var(--board3)}
+.lesson .n{font-size:2.8em; font-weight:800; color:var(--deadline); line-height:1}
+.lesson p{margin:0; font-size:1.5em}
+.lesson p b{color:var(--deadline)}
+.lesson.off{opacity:.15}
+.loop{display:flex; gap:.5em; flex-wrap:wrap; margin-top:1.2em}
+.loop span{background:var(--board2); padding:.4em 1.1em; border-radius:999px; font-weight:800; font-size:1.2em}
+.loop span:first-child{background:var(--deadline); color:var(--cardink)}
+
+/* deadline kicker */
+.kick{display:inline-block; background:var(--deadline); color:var(--cardink); font-weight:800; border-radius:999px; padding:.1em .7em; font-size:.95em; margin-bottom:.35em}
+.flow .card .dl{display:block; font-weight:800; color:var(--cardmuted); font-size:.8em; margin-top:-.1em}
+/* idea bulbs */
+.bulbs{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.2em; margin:.6em 0 1em}
+.bulb{background:var(--board2); border-radius:16px; padding:1.2em 1em 1.1em; text-align:center}
+.bulb svg{width:7em; height:auto; display:block; margin:0 auto .6em}
+.bulb .halo{fill:#FFE9A8; opacity:calc(var(--glow) * .35)}
+.bulb .glass{fill:#FFE38A; fill-opacity:var(--glow); stroke:#FFE7A0; stroke-width:2; stroke-opacity:calc(.35 + var(--glow) * .5)}
+.bulb .fil{fill:none; stroke:#B98A1C; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; opacity:calc(.3 + var(--glow) * .7)}
+.bulb .base{fill:#8C93B8}
+.bulb h3{margin:0; font-size:1.6em; letter-spacing:-.01em}
+.bulb .range{display:block; color:var(--muted); font-size:1.1em; margin-top:.2em}
+.bulb .pts{display:inline-block; margin-top:.5em; font-size:1.3em; background:#FFE9A8; color:var(--cardink); font-weight:800; border-radius:999px; padding:.1em .8em}
+@media (prefers-reduced-motion:no-preference){ .bulb:first-child .halo{animation:glow 2.4s ease-in-out infinite} }
+@keyframes glow{50%{opacity:.5}}
+/* project transition */
+.project{min-height:60vh; display:flex; flex-direction:column; justify-content:center; align-items:flex-start}
+.project .star{font-size:3em; color:var(--deadline); line-height:1}
+.project h1{font-size:4.4em; line-height:.95; letter-spacing:-.04em; margin:.2em 0 .6em; font-weight:800}
+.project h1 em{font-style:normal; color:var(--deadline)}
+.tally{background:var(--card); color:var(--cardink); border-radius:14px; padding:1em 1.3em; display:flex; flex-direction:column; gap:.2em}
+.tally b{font-size:2em; line-height:1.1}
+.tally span{color:var(--cardmuted)}
+.quiet{color:var(--muted); font-size:1.2em; margin-top:1em}
+.pitch{margin-top:1em; background:var(--card); color:var(--cardink); border-radius:12px; padding:1em 1.2em; font-size:1.55em; font-weight:700; line-height:1.5}
+.pitch u{text-decoration:none; border-bottom:3px dashed var(--designer); color:var(--designer); font-weight:600; font-size:.8em}
+/* controls */
+.ctrl{display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:10px 18px; background:var(--board2)}
+.ctrl button{border:0; border-radius:8px; padding:8px 12px; background:var(--board3); color:var(--ink); font-weight:700; font-size:14px}
+.ctrl button.primary{background:var(--deadline); color:var(--cardink)}
+.ctrl button[aria-pressed="true"]{background:var(--designer); color:#fff}
+.dots{display:flex; gap:5px; margin:0 auto}
+.dots button{width:30px; height:30px; padding:0 !important; border-radius:50% !important; font-size:12px !important}
+.dots button[aria-current="true"]{background:var(--deadline); color:var(--cardink)}
+.ctrl input[type=range]{width:90px; accent-color:var(--deadline)}
+.vol{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted)}
+.notes{background:var(--card); color:var(--cardink); padding:14px 22px; font-size:15px; max-height:28vh; overflow:auto; border-top:4px solid var(--deadline)}
+.notes h4{margin:0 0 6px}
+.toast{position:fixed; left:50%; bottom:80px; transform:translateX(-50%); background:var(--card); color:var(--cardink); padding:10px 16px; border-radius:10px; font-size:14px; font-weight:600; box-shadow:0 6px 24px rgba(0,0,0,.35); max-width:90vw; z-index:30}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">D&amp;D<span>Designers &amp; Deadlines</span></div>
+  <span class="phase-name" id="phaseName"></span>
+  <button type="button" class="clock" id="session" title="Click to start or pause the session clock">Session 00:00 / 20:00</button>
+</header>
+<div class="tbar" id="tbar"><i></i></div>
+<main class="stage" id="stage" aria-live="polite"></main>
+<aside class="notes" id="notes" hidden></aside>
+<nav class="ctrl" aria-label="Facilitator controls">
+  <button type="button" id="prev">Back</button>
+  <button type="button" id="next" class="primary">Next</button>
+  <div class="dots" id="dots"></div>
+  <button type="button" id="tStart" class="primary">Start timer</button>
+  <button type="button" id="tAdd">+30 s</button>
+  <button type="button" id="tReset">Reset</button>
+  <button type="button" id="music" aria-pressed="true">Music on</button>
+  <label class="vol">Volume <input type="range" id="vol" min="0" max="100" value="60" aria-label="Music volume"></label>
+  <button type="button" id="tNotes" aria-pressed="false">Notes</button>
+  <button type="button" id="fs">Full screen</button>
+</nav>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<!-- Music. Each track tries a local file first (music/...mp3 next to this page), then the Suno CDN. -->
+<audio id="trk-explain" loop preload="none">
+  <source src="music/explain.mp3" type="audio/mpeg">
+  <source src="https://cdn1.suno.ai/34146cff-296c-4de8-a22a-c0aba38584b2.mp3" type="audio/mpeg">
+</audio>
+<audio id="trk-decide" loop preload="none">
+  <source src="music/decision.mp3" type="audio/mpeg">
+  <source src="https://cdn1.suno.ai/37c76d91-48b7-436c-b7b2-c1dfcd77e508.mp3" type="audio/mpeg">
+</audio>
+<audio id="trk-win" preload="none">
+  <source src="music/victory.mp3" type="audio/mpeg">
+  <source src="https://cdn1.suno.ai/1ff0bc3c-0b05-4b45-a715-8c97d1239d3e.mp3" type="audio/mpeg">
+</audio>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+"use strict";
+/* ===================== GAME DATA (keep identical in team.html) ===================== */
+const RSYM={S:"S",C:"C",T:"T",E:"€"};
+const RNAME={S:"Skill",C:"Collaboration",T:"Time",E:"Budget"};
+const CH={dig:"Digital",tat:"Tactile",acc:"Accessible",fam:"Family-friendly",soc:"Social",loc:"Local"};
+const DESIGNERS=[
+ {n:"Bruno Munari",S:1,C:3,disc:["B","S"]},{n:"Dieter Rams",S:3,C:1,disc:["A","T"]},
+ {n:"Giorgia Lupi",S:2,C:3,disc:["F","T"]},{n:"John Maeda",S:3,C:2,disc:["H","S"]},
+ {n:"Issey Miyake",S:3,C:2,disc:["I","E"]},{n:"Jil Sander",S:3,C:1,disc:["G","E"]},
+ {n:"Paula Scher",S:2,C:2,disc:["D","C"]},{n:"Erik Spiekermann",S:2,C:3,disc:["J","E"]},
+ {n:"Philippe Starck",S:2,C:3,disc:["C","E"]},{n:"Lella & Massimo Vignelli",S:2,C:2,disc:["E","C"]}
+];
+const MUSEUMS=[
+ {n:"Museum of Contemporary Art",T:1,E:3},{n:"Science and Technology Museum",T:2,E:2},
+ {n:"Old Masters Gallery",T:2,E:1},{n:"Design Museum",T:1,E:2},{n:"Radio Museum",T:2,E:1},
+ {n:"Natural History Museum",T:3,E:1},{n:"City Museum",T:2,E:2},{n:"Transport Museum",T:1,E:3},
+ {n:"Archaeological Museum",T:3,E:1},{n:"Museum of Everyday Objects",T:2,E:1}
+];
+const OPT=[
+ {k:"A",n:"Field research",t:"Interviews and observation",cost:{C:1,T:1},ch:[],pp:0,kind:"jolly",eff:"Wild card: after your tester arrives, pick 1 feature. It counts as yours."},
+ {k:"B",n:"Practical materials",t:"Hands-on objects and props",cost:{S:1,E:1},ch:["tat","fam"],pp:3},
+ {k:"C",n:"New technologies",t:"Apps, screens and sensors",cost:{S:2,E:2},ch:["dig"],pp:6,combo:{ch:"soc",pp:2}},
+ {k:"D",n:"Designer network",t:"Bring other creatives on board",cost:{C:2,T:1},ch:["soc"],pp:3,combo:{ch:"dig",pp:2}},
+ {k:"E",n:"Curator insights",t:"Stories from the collection",cost:{C:1,T:1},ch:["loc"],pp:2,combo:{ch:"soc",pp:2}},
+ {k:"F",n:"Museum research",t:"Audits, data and visitor studies",cost:{S:1,T:2},ch:["acc"],pp:3,combo:{ch:"tat",pp:2}},
+ {k:"G",n:"Exclusive patents",t:"Sabotage",cost:{E:1},ch:[],pp:0,kind:"sab",eff:"At closing: the 2 nearest teams with Digital pay 1 € (or lose 1 PP). You gain 1 PP per team hit."},
+ {k:"H",n:"Headhunting",t:"Sabotage",cost:{S:1},ch:[],pp:0,kind:"sab",eff:"At closing: one nearby team gives you 1 resource of your choice: C, T or €."},
+ {k:"I",n:"Supplier & artisan network",t:"Local makers and craftspeople",cost:{C:1,T:1,E:1},ch:["tat","loc"],pp:3},
+ {k:"J",n:"Regulatory & certification standards",t:"Safety and accessibility compliance",cost:{S:1,T:1,E:1},ch:["acc","fam"],pp:2}
+];
+const SETBACKS=[
+ {n:"Budget cut",fl:"The director has redone the maths.",rule:"Pay 2 €. With Digital, pay 3 €."},
+ {n:"Creative block",fl:"The ideas have dried up.",rule:"Pay 2 C. With Social, pay only 1 C: the group gets you unstuck."},
+ {n:"Early opening",fl:"The mayor cuts the ribbon a week early.",rule:"Pay 2 T. With Local, pay nothing: the neighbourhood is already on board. With Digital, +2 PP: the press loves tech."},
+ {n:"Production bug",fl:"The software crashes on test day.",rule:"Pay 2 S. With Digital, pay 3 S. With Tactile, pay nothing: no software, no bugs."},
+ {n:"The scientific board wants a word",fl:"Emergency meeting.",rule:"Pay 1 C and 1 T. With Accessible, +3 PP: approved with honours."},
+ {n:"Surprise sponsor",fl:"A foundation believes in your project.",rule:"No cost. +2 PP, or +4 PP with Family-friendly."}
+];
+const TESTERS=[
+ {n:"The family",d:"Two parents and two kids on a Sunday visit",q:"We just want a nice day out together.",p:"fam",s:"soc"},
+ {n:"Sara",d:"Visually impaired",q:"I want to find my way on my own.",p:"acc",s:"tat"},
+ {n:"Lukas",d:"Young tourist who lives on social media",q:"If I can’t post it, did it even happen?",p:"dig",s:"soc"},
+ {n:"Anne",d:"Local elderly woman, has lived here all her life",q:"Tell me something about my city I don’t know yet.",p:"loc",s:"acc"}
+];
+const SCORE={p:10,s:5,n:-5};
+const levelOf=pp=>pp>=13?"Cool Idea":pp>=8?"Solid Idea":"Basic Idea";
+const ORD=["","1st","2nd","3rd","4th","5th"];
+const sgn=n=>(n>0?"+":n<0?"−":"")+Math.abs(n);
+
+/* ===================== STATE ===================== */
+const KEY="dd-board-v2";
+let M={n:4,names:[],deal:null,setbacks:null,visitors:null,scores:[],revealed:false,scene:0,rev:{}};
+try{ const r=JSON.parse(localStorage.getItem(KEY)||"null"); if(r && r.n) M=Object.assign(M,r); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(M)); }catch(e){} }
+const teamName=i=>(M.names[i]&&M.names[i].trim())||("Team "+(i+1));
+
+/* ===================== HELPERS ===================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tag=c=>`<span class="tag ch-${c}">${CH[c]}</span>`;
+const resHTML=c=>Object.keys(c).filter(r=>c[r]>0).map(r=>`<span class="res ${r}">${c[r]}<i aria-label="${RNAME[r]}">${RSYM[r]}</i></span>`).join("");
+const fmt=s=>{s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0");};
+function rnd(n){ try{ const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]%n; }catch(e){ return Math.floor(Math.random()*n); } }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+// deal n cards from a deck of size k: every card appears before any repeats
+function dealDeck(k,n){ let out=[], deck=[]; while(out.length<n){ if(!deck.length) deck=shuffle([...Array(k).keys()]); out.push(deck.pop()); } return out; }
+function discLabel(o){ const d=DESIGNERS.find(x=>x.disc[0]===o.k), tot=Object.values(o.cost).reduce((a,x)=>a+x,0); return d.n+(tot===1?": free":": −1 "+RSYM[d.disc[1]]); }
+const dieSVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="16" cy="16" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="16" cy="8" r="1.3" fill="currentColor"/><circle cx="8" cy="16" r="1.3" fill="currentColor"/></svg>`;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,4200); }
+const cols=()=>M.n<=4?M.n:(M.n<=6?3:5);
+
+/* ===================== SCENES ===================== */
+const SC=[
+ {name:"Welcome",when:"before start",dur:0,steps:0,music:null,
+  notes:"Pick the number of teams and, if you like, type their names. Students scan the QR code to open their team sheet. Press Next to begin: the session clock starts."},
+ {name:"How to play",when:"00:00–01:00",dur:0,steps:0,music:"explain",
+  notes:"“For the next twenty minutes you are famous designers racing four deadlines. A museum wants a game for its visitors. Your Designer card gives you Skill and Collaboration. Your Museum card gives you Time and Budget. You spend them in the Project Inventory. Then a setback hits each team and a real tester tries your prototype. Your idea becomes a project, and the best project wins.” Point at the rule about unspent resources without explaining it."},
+ {name:"1st Deadline – Pick your cards",when:"01:00–02:00",dur:60,steps:0,music:"explain",label:"Pick your cards",
+  notes:"Either let each team pick one Designer and one Museum (each card once), or press “Deal at random”. Teams enter both cards on their phone: the values fill in automatically. Remind them of the personal discount on each Designer card."},
+ {name:"2nd Deadline – Project Inventory",when:"02:00–06:00",dur:240,steps:0,music:"explain",label:"Inventory open",
+  notes:"Start the timer. “What do you need to develop your project? Add up to four items on your phone.” Call 3:00, 1:00 and the last ten seconds. If a team asks what to buy, answer: “Who are you designing for?”"},
+ {name:"2nd Deadline – Closing",when:"06:00–07:30",dur:90,steps:0,music:"decide",label:"Closing",
+  notes:"Start the timer: the decision music plays while it runs. First half: teams with a sabotage raise their hand and apply it to nearby teams, who record it on their phone. Halfway, the board switches to Last call: one final purchase, then features are fixed."},
+ {name:"3rd Deadline – Development setbacks",when:"07:30–09:30",dur:90,steps:0,music:"decide",label:"Apply setbacks",
+  notes:"“Every project meets reality.” Press “Draw setbacks”: each team gets exactly one. Read a couple aloud, then start the timer. Teams pick their setback on the phone: it locks their inventory and updates their Project Points."},
+ {name:"You’ve got an idea!",when:"09:30–11:00",dur:0,steps:0,music:"explain",
+  notes:"“You’ve got an idea!” Each team checks its idea level on its own Team Sheet: nothing to type on the board. Ask for a show of hands: “Basic idea? Solid idea? Cool idea?” Then: “This is how much you like your idea. Now let’s see what real people think.”"},
+ {name:"4th Deadline – Prototype and Test",when:"11:00–14:00",dur:180,steps:0,music:"decide",label:"Score it",
+  notes:"“Your prototype is ready. Here are your testers.” Press “Bring in the testers”: each team gets exactly one. Read some of them aloud, then start the timer. Teams select their tester on the phone and get their final score."},
+ {name:"You have turned your idea into a project!",when:"14:00–15:30",dur:0,steps:0,music:"explain",
+  notes:"Passive transition: no action for the teams. “You have turned your idea into a project!” Their Team Sheet already shows the final tally: Project Points plus tester points. Give them a moment to read it, then move on to the winner."},
+ {name:"Winner Announcement",when:"15:30–20:00",dur:0,steps:0,music:"win",
+  notes:"Type each team’s final score as they read it from their phone, then press “Reveal the winner”: the victory song starts. Tie-break: tester satisfied with the primary feature, then more Project Points, then more resources left."}
+];
+
+function head(title,sub,kick){
+  const s=SC[M.scene];
+  const right=s.dur?`<div class="timer" id="tbox"><b id="tdig">${fmt(timer.left)}</b><span id="tlab">${esc(s.label||"Timer")}</span></div>`:`<div class="when">${s.when}</div>`;
+  return `<div class="head"><div>${kick?`<span class="kick">${kick} Deadline</span>`:""}<h1>${title}</h1>${sub?`<p>${sub}</p>`:""}</div>${right}</div>`;
+}
+const legend=()=>`<div class="legend"><span><b class="plus">+${SCORE.p}</b>you own the primary feature</span><span><b class="plus">${sgn(SCORE.s)}</b>only the secondary</span><span><b class="minus">${sgn(SCORE.n)}</b>neither</span><span>Field research? Pick your wild card now.</span></div>`;
+const PHASES=[["1st","Pick your cards","1 min","One Designer and one Museum card per team."],["2nd","Project Inventory","5 min","Spend your resources on up to 4 items."],["3rd","Development setbacks","2 min","One random setback hits each team."],["4th","Prototype and Test","3 min","One random tester tries your prototype."],["","Final tally","after the tests","Your idea becomes a project. Highest score wins."]];
+
+const R={
+ 0:()=>`<div class="welcome"><div>
+    <h1>D&amp;D<br><em>Designers</em><br><span>&amp; Deadlines</span></h1>
+    <p class="tagline">Design a game for a museum before the deadlines hit.</p>
+    <div class="label">How many teams are playing?</div>
+    <div class="count" role="group" aria-label="Number of teams">${[2,3,4,5,6,7,8,9,10].map(k=>`<button type="button" data-count="${k}" aria-pressed="${k===M.n}">${k}</button>`).join("")}</div>
+    <div class="label">Team names <span style="color:var(--muted);font-weight:500">(optional)</span></div>
+    <div class="names">${Array.from({length:M.n},(_,i)=>`<input type="text" data-name="${i}" value="${esc(M.names[i]||"")}" placeholder="Team ${i+1}" maxlength="24" aria-label="Name of team ${i+1}">`).join("")}</div>
+  </div>
+  <div class="qr"><div id="qrbox"></div><p><b>Scan to open your team sheet</b></p><p class="url" id="qrurl"></p></div></div>`,
+ 1:()=>head("How to play","You are famous designers. A museum needs a game for its visitors. Beat four deadlines and build the best one.")+
+  `<div class="g g5 flow">${PHASES.map(f=>`<div class="card"><span class="n">${f[0]||"★"}</span><span class="dl">${f[0]?"Deadline":"Finale"}</span><h3>${f[1]}</h3><span class="muted">${f[2]}</span><p style="margin:.3em 0 0">${f[3]}</p></div>`).join("")}</div>
+  <div class="g g2" style="margin-top:.8em">
+    <div class="src d"><h3>Designer card</h3><p style="margin:0"><span class="res S"><i>S</i></span> <b>Skill</b> and <span class="res C"><i>C</i></span> <b>Collaboration</b> depend on your designer.</p></div>
+    <div class="src m"><h3>Museum card</h3><p style="margin:0"><span class="res T"><i>T</i></span> <b>Time</b> and <span class="res E"><i>€</i></span> <b>Budget</b> depend on your museum’s conditions.</p></div>
+  </div>
+  <div class="formula" style="margin-top:.8em"><b>Final score: count your points!</b><span>Project Points (PP) + tester points. Your phone does the maths.</span></div>
+  <div class="chips"><span>Max 4 items</span><span>Max 1 sabotage</span><span class="key">Unspent resources are not wasted</span></div>`,
+ 2:()=>{
+  const byD={}, byM={}; (M.deal||[]).forEach((x,i)=>{ byD[x.d]=teamName(i); byM[x.m]=teamName(i); });
+  const owner=n=>n?`<span class="owner">${esc(n)}</span>`:"";
+  return head("Pick your cards","Each team takes one Designer card and one Museum card. Each card can be used by one team only.","1st")+
+  `<div class="g g5">${DESIGNERS.map((d,i)=>`<div class="card dcard"><span class="num">Designer ${i+1}</span>${owner(byD[i])}<h3>${esc(d.n)}</h3>${resHTML({S:d.S,C:d.C})}<small class="muted">Discount: item ${d.disc[0]}</small></div>`).join("")}</div>
+  <div class="g g5" style="margin-top:.6em">${MUSEUMS.map((m,i)=>`<div class="card mcard"><span class="num">Museum ${i+1}</span>${owner(byM[i])}<h3>${esc(m.n)}</h3>${resHTML({T:m.T,E:m.E})}</div>`).join("")}</div>
+  <div style="margin-top:.9em;display:flex;gap:.6em;flex-wrap:wrap"><button type="button" class="btn" data-deal>${dieSVG} Deal at random</button>${M.deal?`<button type="button" class="btn alt" data-undeal>Clear the deal</button>`:""}</div>`;
+ },
+ 3:()=>head("Project Inventory","What do you need to develop your project?","2nd")+
+  `<div class="g g5">${OPT.map(o=>`<div class="card it${o.kind==="sab"?" sab":""}"><div class="row"><span class="k">${o.k}</span><span class="pp">${o.pp} PP</span></div>
+    <h3>${esc(o.n)}</h3><span class="sub muted">${esc(o.t)}</span><div>${resHTML(o.cost)}</div><div>${o.ch.map(tag).join("")}</div>
+    ${o.combo?`<span class="eff">Combo: +${o.combo.pp} PP if you own ${CH[o.combo.ch]}</span>`:""}${o.eff?`<span class="eff">${o.eff}</span>`:""}
+    <span class="disc muted">Discount ${esc(discLabel(o))}</span></div>`).join("")}</div>
+  <div class="rules"><b>Max 4 items, sabotage included</b><b>Max 1 sabotage</b><span>Each item once per team</span><span>Discounts apply only to your own designer</span><span>Never below zero</span><span>Combos count when the inventory closes</span></div>`,
+ 4:()=>head("Closing the inventory",null,"2nd")+
+  `<div class="g g2"><div class="card phase on" id="ph1"><span class="muted">First half</span><h3>Sabotages</h3><p>Teams with a sabotage raise their hand and apply it to nearby teams.</p><p>Teams that are hit record it on their phone straight away.</p></div>
+   <div class="card phase" id="ph2"><span class="muted">Second half</span><h3>Last call</h3><p>Got a free slot and resources? Make one final purchase.</p><p>Then your features are fixed.</p></div></div>
+  <div class="strip">Each team can be hit by at most one Exclusive patents and one Headhunting: first come, first served. Nobody loses more than 2 between resources and PP from sabotages.</div>`,
+ 5:()=>{
+  const d=M.setbacks;
+  return head("Development setbacks","Every project meets reality. Each team gets exactly one setback.","3rd")+
+  `<div style="margin-bottom:.8em;display:flex;gap:.6em;flex-wrap:wrap"><button type="button" class="btn" data-draw-setbacks>${dieSVG} ${d?"Draw again":"Draw setbacks"}</button>${d?`<span style="color:var(--muted);align-self:center">Teams: select your setback on the phone. Missing resources cost 1 PP each.</span>`:""}</div>
+  <div class="draws" style="--cols:${cols()}">${Array.from({length:M.n},(_,i)=>d?`<div class="card draw${M._flipS?" flip":""}" style="animation-delay:${i*90}ms"><span class="team">${esc(teamName(i))}</span><h3>${SETBACKS[d[i]].n}</h3><p class="muted" style="font-style:italic">${SETBACKS[d[i]].fl}</p><p style="font-weight:700;margin-top:.3em">${SETBACKS[d[i]].rule}</p></div>`
+    :`<div class="card draw back"><span class="q">?</span><span>${esc(teamName(i))}</span></div>`).join("")}</div>
+  <div class="strip"><b>Each missing resource: −1 PP.</b><span>Basic Idea 0–7 PP</span><span>Solid Idea 8–12 PP</span><span>Cool Idea 13+ PP</span></div>`;
+ },
+ 6:()=>head("You’ve got an idea!","How good is it? Check your idea level on your Team Sheet: your phone has already done the maths.")+
+  `<div class="bulbs">${[["Cool Idea","13+ PP",1],["Solid Idea","8–12 PP",.62],["Basic Idea","0–7 PP",.32]].map(t=>`<div class="bulb"><svg viewBox="0 0 64 88" aria-hidden="true" style="--glow:${t[2]}"><circle class="halo" cx="32" cy="30" r="30"/><path class="glass" d="M32 6c-12.7 0-23 10-23 22.6 0 8.1 4.2 13.6 8.3 18 2.8 3 4.7 6.5 4.7 10.4V60h20v-3c0-3.9 1.9-7.4 4.7-10.4 4.1-4.4 8.3-9.9 8.3-18C55 16 44.7 6 32 6z"/><path class="fil" d="M26 40l3 6 3-6 3 6 3-6" /><rect class="base" x="22" y="62" width="20" height="6" rx="2"/><rect class="base" x="23" y="70" width="18" height="6" rx="2"/><rect class="base" x="27" y="78" width="10" height="5" rx="2.5"/></svg><h3>${t[0]}</h3><span class="pts">${t[1]}</span></div>`).join("")}</div>
+  <div class="strip"><b>No need to report anything.</b><span>Each team counts its own Project Points on its Team Sheet.</span><span>Next: your prototype meets real testers.</span></div>`,
+ 7:()=>{
+  const v=M.visitors;
+  return head("Prototype and Test","Your prototype meets real people. Each team gets exactly one tester.","4th")+
+  `<div style="margin-bottom:.8em"><button type="button" class="btn" data-draw-visitors>${dieSVG} ${v?"Draw again":"Bring in the testers"}</button></div>
+  <div class="draws" style="--cols:${cols()}">${Array.from({length:M.n},(_,i)=>v?`<div class="card draw${M._flipV?" flip":""}" style="animation-delay:${i*110}ms"><span class="team">${esc(teamName(i))}</span><h3>${TESTERS[v[i]].n}</h3><p class="muted">${TESTERS[v[i]].d}</p><p style="font-style:italic;margin:.3em 0">“${TESTERS[v[i]].q}”</p><p><span class="muted">Primary</span> ${tag(TESTERS[v[i]].p)} <span class="muted">Secondary</span> ${tag(TESTERS[v[i]].s)}</p></div>`
+    :`<div class="card draw back"><span class="q">?</span><span>${esc(teamName(i))}</span></div>`).join("")}</div>${legend()}`;
+ },
+ 8:()=>`<div class="project"><span class="star" aria-hidden="true">★</span><h1>You have turned your idea<br>into a <em>project!</em></h1>
+   <div class="tally"><b>Final score: count your points!</b><span>Project Points + tester points: +10, +5 or −5. Your Team Sheet shows the total.</span></div>
+   <p class="quiet">Nothing to do now. Check your final score and get ready for the winner.</p></div>`,
+ 9:()=>{
+  if(!M.revealed){
+   return head("Winner Announcement","Each team reads its final score from the phone. Type it in, then reveal the winner.")+
+   `<div class="scores" style="--cols:${cols()}">${Array.from({length:M.n},(_,i)=>`<label>${esc(teamName(i))}<input type="number" inputmode="numeric" data-score="${i}" value="${M.scores[i]??""}" aria-label="Final score of ${esc(teamName(i))}"></label>`).join("")}</div>
+   <div style="margin-top:1em"><button type="button" class="btn" data-reveal>Reveal the winner</button></div>`;
+  }
+  const rows=Array.from({length:M.n},(_,i)=>({i,s:Number(M.scores[i])||0})).sort((a,b)=>b.s-a.s);
+  const p=k=>rows[k]?`<div class="pod p${k+1}"><span class="pl">${k===0?"Winner":(k+1)+(k===1?"nd":"rd")+" place"}</span><span class="nm">${esc(teamName(rows[k].i))}</span><span class="pt">${rows[k].s}</span></div>`:"<div></div>";
+  return head("And the winner is…")+`<div class="podium">${p(1)}${p(0)}${p(2)}</div>
+   ${rows.length>3?`<div class="rest">${rows.slice(3).map((r,k)=>`<span>${k+4}. ${esc(teamName(r.i))}: ${r.s}</span>`).join("")}</div>`:""}
+   <div style="margin-top:1em;display:flex;gap:.6em"><button type="button" class="btn alt" data-unreveal>Edit scores</button><button type="button" class="btn alt" data-replay>Play the song again</button></div>`;
+ }
+};
+
+/* ===================== MUSIC ===================== */
+const TR={explain:$("#trk-explain"),decide:$("#trk-decide"),win:$("#trk-win")};
+let musicOn=true, vol=0.6, playing=null, failed={};
+Object.entries(TR).forEach(([k,a])=>{
+  const srcs=a.querySelectorAll("source");
+  srcs[srcs.length-1].addEventListener("error",()=>{ failed[k]=true; if(playing===k) toast("This track could not load. Add the MP3 files to a “music” folder next to index.html."); });
+});
+function fadeTo(a,target,ms,done){
+  clearInterval(a._f); const start=a.volume, t0=performance.now();
+  a._f=setInterval(()=>{ const k=Math.min(1,(performance.now()-t0)/ms); a.volume=Math.max(0,Math.min(1,start+(target-start)*k)); if(k>=1){ clearInterval(a._f); done&&done(); } },40);
+}
+function wantedTrack(){
+  const s=SC[M.scene];
+  if(!musicOn||!s.music) return null;
+  if(s.music==="explain") return "explain";
+  if(s.music==="decide") return timer.running?"decide":null;
+  if(s.music==="win") return M.revealed?"win":null;
+  return null;
+}
+function updateMusic(restartWin){
+  const w=wantedTrack();
+  if(playing && playing!==w){ const k=playing, a=TR[k]; fadeTo(a,0,600,()=>{ if(playing!==k) a.pause(); }); }
+  if(w && (w!==playing || restartWin)){
+    const a=TR[w];
+    if(restartWin){ try{ a.currentTime=0; }catch(e){} }
+    a.preload="auto"; a.volume=0; const p=a.play(); if(p&&p.catch) p.catch(err=>{ if(err && err.name==="NotAllowedError") toast("Press any control once to allow music in this browser."); });
+    fadeTo(a,vol,900);
+  }
+  playing=w;
+}
+$("#music").addEventListener("click",e=>{ musicOn=!musicOn; e.currentTarget.textContent=musicOn?"Music on":"Music off"; e.currentTarget.setAttribute("aria-pressed",String(musicOn)); updateMusic(); });
+$("#vol").addEventListener("input",e=>{ vol=e.target.value/100; if(playing) TR[playing].volume=vol; });
+
+/* ===================== TIMER ===================== */
+let actx=null;
+function beep(f,d,n){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); for(let i=0;i<n;i++){ const o=actx.createOscillator(), g=actx.createGain(), t=actx.currentTime+i*(d+.12); o.type="square"; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.2,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g).connect(actx.destination); o.start(t); o.stop(t+d+.02);} }catch(e){} }
+const timer={dur:0,left:0,running:false,end:0,b60:false,b0:false};
+function resetTimer(){ const s=SC[M.scene]; timer.dur=s.dur; timer.left=s.dur; timer.running=false; timer.b60=s.dur<=60; timer.b0=false; paintTimer(); updateMusic(); }
+function toggleTimer(){
+  if(!SC[M.scene].dur) return;
+  if(timer.running){ timer.left=Math.max(0,(timer.end-Date.now())/1000); timer.running=false; }
+  else { if(timer.left<=0) resetTimer(); timer.end=Date.now()+timer.left*1000; timer.running=true; beep(660,.08,1); }
+  paintTimer(); updateMusic();
+}
+function addTime(s){ if(!SC[M.scene].dur) return; if(timer.running) timer.end+=s*1000; else timer.left+=s; const l=timer.running?(timer.end-Date.now())/1000:timer.left; timer.dur=Math.max(timer.dur,l); if(l>60) timer.b60=false; timer.b0=false; paintTimer(); }
+function paintTimer(){
+  const s=SC[M.scene], bar=$("#tbar");
+  ["#tStart","#tAdd","#tReset"].forEach(id=>$(id).disabled=!s.dur);
+  $("#tStart").textContent=timer.running?"Pause timer":"Start timer";
+  if(!s.dur){ bar.firstElementChild.style.transform="scaleX(0)"; bar.classList.remove("hot"); return; }
+  const left=timer.running?Math.max(0,(timer.end-Date.now())/1000):timer.left;
+  bar.firstElementChild.style.transform=`scaleX(${timer.dur?left/timer.dur:0})`;
+  const hot=left>0&&left<=10, done=left<=0;
+  bar.classList.toggle("hot",hot||done);
+  const box=$("#tbox"); if(box){ $("#tdig").textContent=fmt(left); box.classList.toggle("hot",hot&&timer.running); box.classList.toggle("done",done); $("#tlab").textContent=done?"Time’s up":timer.running?(s.label||"Timer"):"Ready"; }
+  if(M.scene===4){ const half=timer.dur/2, a=$("#ph1"),b=$("#ph2"); if(a&&b){ a.classList.toggle("on",left>half); b.classList.toggle("on",left<=half); } }
+}
+setInterval(()=>{
+  if(timer.running){
+    const left=(timer.end-Date.now())/1000;
+    if(!timer.b60 && left<=60 && timer.dur>60){ timer.b60=true; beep(880,.15,2); }
+    if(left<=0){ timer.running=false; timer.left=0; if(!timer.b0){ timer.b0=true; beep(440,.4,3); } updateMusic(); }
+    paintTimer();
+  }
+  paintSession();
+},200);
+
+/* session clock */
+const sess={acc:0,start:0,on:false};
+function paintSession(){ const ms=sess.acc+(sess.on?Date.now()-sess.start:0), s=Math.floor(ms/1000); $("#session").textContent=`Session ${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")} / 20:00`; }
+function sessSet(on){ if(on===sess.on) return; if(on){ sess.start=Date.now(); sess.on=true; } else { sess.acc+=Date.now()-sess.start; sess.on=false; } }
+$("#session").addEventListener("click",()=>sessSet(!sess.on));
+
+/* ===================== RENDER / NAV ===================== */
+function render(){
+  const s=SC[M.scene];
+  $("#stage").innerHTML=R[M.scene](M.rev[M.scene]||0);
+  $("#phaseName").textContent=s.name;
+  $("#dots").innerHTML=SC.map((x,i)=>`<button type="button" data-go="${i}" title="${x.name}" aria-label="${x.name}" ${i===M.scene?'aria-current="true"':""}>${i+1}</button>`).join("");
+  $("#notes").innerHTML=`<h4>${s.name} <span style="color:var(--cardmuted);font-weight:500">${s.when}</span></h4>${esc(s.notes)}`;
+  if(M.scene===0) drawQR();
+  paintTimer();
+  M._flipS=false; M._flipV=false;
+}
+function go(i){ if(i<0||i>=SC.length) return; if(M.scene===0&&i>0) sessSet(true); M.scene=i; save(); resetTimer(); render(); }
+function next(){ const s=SC[M.scene], r=M.rev[M.scene]||0; if(r<s.steps){ M.rev[M.scene]=r+1; save(); render(); } else go(M.scene+1); }
+function prev(){ const r=M.rev[M.scene]||0; if(r>0){ M.rev[M.scene]=r-1; save(); render(); } else go(M.scene-1); }
+
+function teamURL(){ try{ return new URL("team.html",location.href).href; }catch(e){ return "team.html"; } }
+function drawQR(){
+  const box=$("#qrbox"), url=teamURL(); if(!box) return;
+  $("#qrurl").textContent=url.replace(/^https?:\/\//,"");
+  box.innerHTML="";
+  if(window.QRCode){ try{ new QRCode(box,{text:url,width:260,height:260,colorDark:"#171A2B",colorLight:"#FFFFFF",correctLevel:QRCode.CorrectLevel.M}); return; }catch(e){} }
+  box.innerHTML=`<p class="muted">The QR code needs an internet connection. Share the address below instead.</p>`;
+}
+
+$("#next").addEventListener("click",next);
+$("#prev").addEventListener("click",prev);
+$("#dots").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(b) go(+b.dataset.go); });
+$("#tStart").addEventListener("click",toggleTimer);
+$("#tAdd").addEventListener("click",()=>addTime(30));
+$("#tReset").addEventListener("click",resetTimer);
+$("#tNotes").addEventListener("click",e=>{ const n=$("#notes"); n.hidden=!n.hidden; e.currentTarget.setAttribute("aria-pressed",String(!n.hidden)); });
+$("#fs").addEventListener("click",()=>{ try{ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); }catch(e){} });
+
+$("#stage").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.count){ M.n=+b.dataset.count; M.deal=null; M.setbacks=null; M.visitors=null; M.revealed=false; save(); render(); }
+  else if(b.hasAttribute("data-deal")){ const d=shuffle([...Array(10).keys()]), m=shuffle([...Array(10).keys()]); M.deal=Array.from({length:M.n},(_,i)=>({d:d[i],m:m[i]})); save(); render(); beep(520,.06,3); }
+  else if(b.hasAttribute("data-undeal")){ M.deal=null; save(); render(); }
+  else if(b.hasAttribute("data-draw-setbacks")){ if(M.setbacks && !confirm("Draw new setbacks for every team?")) return; M.setbacks=dealDeck(SETBACKS.length,M.n); M._flipS=true; save(); render(); beep(520,.06,3); }
+  else if(b.hasAttribute("data-draw-visitors")){ if(M.visitors && !confirm("Draw new testers for every team?")) return; M.visitors=dealDeck(TESTERS.length,M.n); M._flipV=true; save(); render(); beep(520,.06,3); }
+  else if(b.hasAttribute("data-reveal")){ M.revealed=true; save(); render(); updateMusic(true); }
+  else if(b.hasAttribute("data-unreveal")){ M.revealed=false; save(); render(); updateMusic(); }
+  else if(b.hasAttribute("data-replay")){ updateMusic(true); }
+});
+$("#stage").addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.name!==undefined){ M.names[+t.dataset.name]=t.value; save(); }
+  else if(t.dataset.score!==undefined){ M.scores[+t.dataset.score]=t.value; save(); }
+});
+document.addEventListener("keydown",e=>{
+  const t=e.target; if(t && (t.isContentEditable || /INPUT|SELECT|TEXTAREA/.test(t.tagName))) return;
+  if(["ArrowRight","PageDown"," "].includes(e.key)){ e.preventDefault(); next(); }
+  else if(["ArrowLeft","PageUp"].includes(e.key)){ e.preventDefault(); prev(); }
+  else if(e.key==="t"||e.key==="T") toggleTimer();
+  else if(e.key==="r"||e.key==="R") resetTimer();
+  else if(e.key==="n"||e.key==="N") $("#tNotes").click();
+  else if(e.key==="m"||e.key==="M") $("#music").click();
+});
+
+/* ===================== START ===================== */
+resetTimer(); render(); paintSession();
+})();
+</script>
+</body>
+</html>

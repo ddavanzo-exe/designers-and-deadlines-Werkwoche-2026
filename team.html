@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171A2B">
+<title>D&amp;D: Designers &amp; Deadlines – Team sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#F3F4F8; --surface:#FFFFFF; --ink:#171A2B; --muted:#5D6278; --line:#DDE0EA;
+  --designer:#5B3DF5; --designer-soft:#ECE8FF; --museum:#0B7F81; --museum-soft:#DBF2F1;
+  --deadline:#FFB020; --deadline-ink:#171A2B; --bad:#C81E35; --good:#1A7F4E; --bar:#171A2B; --onbar:#F3F4F8; --onres:#FFFFFF;
+  --font:"Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark; --bg:#0F1120; --surface:#191C30; --ink:#ECEEF8; --muted:#A3A8C3; --line:#2C3050;
+    --designer:#A08CFF; --designer-soft:#262147; --museum:#43C9CB; --museum-soft:#12333A;
+    --bad:#FF6B7D; --good:#52CF8F; --bar:#090A14; --onbar:#ECEEF8; --onres:#0F1120;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark; --bg:#0F1120; --surface:#191C30; --ink:#ECEEF8; --muted:#A3A8C3; --line:#2C3050;
+  --designer:#A08CFF; --designer-soft:#262147; --museum:#43C9CB; --museum-soft:#12333A;
+  --bad:#FF6B7D; --good:#52CF8F; --bar:#090A14; --onbar:#ECEEF8; --onres:#0F1120;
+}
+:root{box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px); -webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--font); font-size:16px; line-height:1.45}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:20; background:var(--bar)}
+button,input,select{font:inherit; color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--deadline); outline-offset:2px}
+[hidden]{display:none !important}
+.wrap{max-width:640px; margin:0 auto; padding:0 14px 40px}
+
+.top{position:sticky; top:env(safe-area-inset-top,0px); z-index:10; background:var(--bar); color:var(--onbar)}
+.top .row{display:flex; align-items:center; gap:10px; padding:10px 14px; max-width:640px; margin:0 auto}
+.logo{font-weight:800; font-size:17px; letter-spacing:-.02em; line-height:1.05; margin-right:auto}
+.logo span{display:block; font-size:12px; font-weight:500; opacity:.75}
+.live{text-align:right; line-height:1.05}
+.live b{display:block; font-size:24px; font-variant-numeric:tabular-nums; color:var(--deadline)}
+.live span{font-size:11px; opacity:.8}
+
+h1.big{font-size:clamp(40px,12vw,64px); line-height:.9; letter-spacing:-.045em; margin:26px 0 8px; font-weight:800}
+h1.big em{font-style:normal; color:var(--designer)}
+.lead{color:var(--muted); font-size:17px; margin:0 0 20px}
+.h2{font-size:20px; font-weight:800; margin:22px 0 10px}
+.count{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
+.count button{aspect-ratio:1; border:2px solid var(--line); background:var(--surface); border-radius:12px; font-size:22px; font-weight:800}
+.count button[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+input[type="text"],select{width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface)}
+.btn{border:0; border-radius:12px; padding:12px 18px; font-weight:800; background:var(--ink); color:var(--bg); font-size:16px}
+.btn.wide{width:100%; padding:16px; font-size:18px; margin-top:20px}
+.btn.alt{background:transparent; color:var(--ink); border:2px solid var(--line)}
+.btn.small{padding:8px 12px; font-size:14px; border-radius:10px}
+.btn:disabled{opacity:.4; cursor:not-allowed}
+.note{font-size:13.5px; color:var(--muted)}
+
+.sec{background:var(--surface); border:1.5px solid var(--line); border-radius:16px; padding:14px 16px; margin:14px 0}
+.sec h2{margin:0 0 10px; font-size:18px; font-weight:800; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.sec h2 .n{display:inline-grid; place-items:center; width:26px; height:26px; border-radius:8px; background:var(--ink); color:var(--bg); font-size:14px}
+.sec h2 small{font-weight:500; color:var(--muted); font-size:13px}
+
+.src{border-radius:14px; padding:12px; margin-bottom:10px}
+.src.d{background:var(--designer-soft); border:2px solid var(--designer)}
+.src.m{background:var(--museum-soft); border:2px solid var(--museum)}
+.src .who{display:flex; justify-content:space-between; gap:8px; margin-bottom:8px; flex-wrap:wrap}
+.src .who b{font-weight:800}
+.src.d .who b{color:var(--designer)} .src.m .who b{color:var(--museum)}
+.src .who span{font-size:13px; color:var(--muted)}
+.src select{margin-bottom:10px}
+.vals{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+@media (max-width:480px){ .vals{grid-template-columns:1fr} }
+.val{display:flex; align-items:center; gap:8px; background:var(--surface); border-radius:10px; padding:6px 8px}
+.letter{width:34px; height:34px; border-radius:9px; display:grid; place-items:center; color:var(--onres); font-weight:800; font-size:17px; flex:0 0 auto}
+.letter.S,.letter.C{background:var(--designer)} .letter.T,.letter.E{background:var(--museum)}
+.val .lbl{flex:1; font-size:14px; line-height:1.15}
+.step{display:flex; align-items:center; gap:4px}
+.step button{width:32px; height:32px; border-radius:50%; border:0; background:var(--ink); color:var(--bg); font-weight:800}
+.step output{min-width:24px; text-align:center; font-weight:800; font-size:18px; font-variant-numeric:tabular-nums}
+.fixed{font-weight:800; font-size:18px}
+
+.res-now{display:grid; grid-template-columns:repeat(4,1fr); gap:6px}
+.res-now div{border-radius:12px; padding:8px 4px; text-align:center; color:var(--onres)}
+.res-now .S,.res-now .C{background:var(--designer)} .res-now .T,.res-now .E{background:var(--museum)}
+.res-now b{display:block; font-size:24px; line-height:1.1; font-variant-numeric:tabular-nums}
+.res-now span{font-size:11px; font-weight:600}
+
+.inv{display:grid; gap:8px}
+.it{border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; display:grid; grid-template-columns:1fr auto; gap:4px 10px; align-items:center}
+.it.own{border:2px solid var(--ink)}
+.it.sab{border-style:dashed; border-color:var(--bad)}
+.it .nm{font-weight:800}
+.it .nm .k{display:inline-grid; place-items:center; width:24px; height:24px; border-radius:6px; background:var(--ink); color:var(--bg); font-size:13px; margin-right:6px}
+.it.sab .nm .k{background:var(--bad); color:#fff}
+.it .meta{grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:4px 6px; align-items:center; font-size:13px}
+.it .why{grid-column:1 / -1; font-size:12px; color:var(--bad); font-weight:600}
+.cost{display:inline-flex; gap:3px; align-items:center; font-weight:700}
+.cost i{font-style:normal; display:inline-grid; place-items:center; width:20px; height:20px; border-radius:6px; color:var(--onres); font-size:11px; font-weight:800}
+.cost i.S,.cost i.C{background:var(--designer)} .cost i.T,.cost i.E{background:var(--museum)}
+.ppchip{display:inline-block; font-weight:800; font-size:13px; padding:1px 7px; border-radius:6px; background:var(--deadline); color:var(--deadline-ink)}
+.pill{display:inline-block; padding:1px 8px; border-radius:999px; font-weight:700; font-size:12px; color:#fff}
+.ch-dig{background:#1F4FD1} .ch-tat{background:#B4472F} .ch-acc{background:#7B4FB8} .ch-fam{background:#23804E} .ch-bre{background:#E9B520; color:#171A2B} .ch-soc{background:#C8323A}
+.combo{color:var(--muted)}
+.adj{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px}
+@media (max-width:380px){ .adj{grid-template-columns:1fr} }
+.adj .val{background:var(--bg)}
+
+table.calc{width:100%; border-collapse:collapse; font-size:15px}
+table.calc td{padding:6px 0; border-bottom:1px solid var(--line)}
+table.calc td:last-child{text-align:right; font-weight:800; font-variant-numeric:tabular-nums}
+table.calc tr.tot td{border-bottom:0; font-size:17px}
+.level{display:inline-block; font-weight:800; padding:3px 10px; border-radius:8px; background:var(--ink); color:var(--bg)}
+.ev{border-radius:14px; padding:12px; border:2px solid var(--ink); margin-top:10px}
+.ev h3{margin:0 0 4px; font-size:19px; line-height:1.15}
+.ev .flav{font-style:italic; color:var(--muted); margin:0 0 6px}
+.ev .rule{font-weight:700; margin:0 0 8px}
+.ev .out{display:flex; justify-content:space-between; gap:8px; align-items:center; padding-top:8px; border-top:1px solid var(--line); font-size:14px}
+.ev .out b{font-size:18px; font-variant-numeric:tabular-nums}
+.plus{color:var(--good)} .minus{color:var(--bad)}
+.wait{border:2px dashed var(--line); border-radius:12px; padding:12px; color:var(--muted)}
+.total{display:flex; align-items:center; gap:14px; background:var(--ink); color:var(--bg); padding:16px 18px; border-radius:16px; margin:14px 0}
+.total b{font-size:52px; font-weight:800; line-height:1; color:var(--deadline); font-variant-numeric:tabular-nums}
+.total span{font-size:14px}
+.ch-loc{background:#9A6412}
+.dl{display:block; font-size:12px; font-weight:800; color:#171A2B; background:var(--deadline); border-radius:999px; padding:1px 8px; width:max-content; margin-bottom:4px}
+.sec h2{flex-direction:column; align-items:flex-start; gap:2px}
+.midcall{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; background:var(--designer-soft); border:2px solid var(--designer); border-radius:12px; padding:10px 12px; margin-top:10px}
+.midcall span{font-size:13px; font-weight:700; flex-basis:100%}
+.midcall b{font-size:28px; line-height:1; font-variant-numeric:tabular-nums}
+.midcall em{font-style:normal; font-weight:700; color:var(--muted)}
+.fld{display:block; margin:10px 0}
+.fld span{display:block; font-size:13px; font-weight:700; margin-bottom:4px}
+.pitch{background:var(--bg); border-radius:12px; padding:12px 14px; font-size:17px; line-height:1.5; margin-top:12px}
+.pitch b{color:var(--designer)}
+.startset{display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:center; background:var(--bg); border-radius:12px; padding:10px 12px}
+.startset span{font-weight:700; font-size:14px}
+.startset small{display:block; font-weight:500; color:var(--muted); font-size:12px}
+.startset b{font-size:24px; font-variant-numeric:tabular-nums}
+.midcall{display:flex; gap:12px; align-items:center; background:#FFF8E1; color:#171A2B; border:2px solid #F3D67A; border-radius:14px; padding:10px 12px; margin-top:10px}
+.midcall span{display:block; font-size:13px; font-weight:700}
+.midcall b{display:block; font-size:24px; line-height:1.1}
+.midcall em{font-style:normal; font-size:13px; color:#5D6278}
+.bulbicon{width:46px; height:auto; flex:0 0 auto}
+.bulbicon .halo{fill:#FFE9A8; opacity:calc(var(--glow) * .5)}
+.bulbicon .glass{fill:#FFD95A; fill-opacity:var(--glow); stroke:#E8C25A; stroke-width:2}
+.bulbicon .fil{fill:none; stroke:#B98A1C; stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.bulbicon .base{fill:#8C93B8}
+.project .star{font-size:28px; color:var(--deadline); line-height:1}
+.tallyrow{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:16px}
+.tallyrow b{font-variant-numeric:tabular-nums}
+.project .total{margin:12px 0 8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="row">
+  <div class="logo">D&amp;D<span id="who">Team sheet</span></div>
+  <div class="live" id="live" hidden><b id="liveScore">–</b><span id="liveLbl">PP</span></div>
+</div></header>
+<main class="wrap" id="app"></main>
+
+<script>
+(function(){
+"use strict";
+/* ===================== GAME DATA (keep identical in index.html) ===================== */
+const RES=["S","C","T","E"];
+const RSYM={S:"S",C:"C",T:"T",E:"€"};
+const RNAME={S:"Skill",C:"Collaboration",T:"Time",E:"Budget"};
+const CH={dig:"Digital",tat:"Tactile",acc:"Accessible",fam:"Family-friendly",soc:"Social",loc:"Local"};
+const DESIGNERS=[
+ {n:"Bruno Munari",S:1,C:3,disc:["B","S"]},{n:"Dieter Rams",S:3,C:1,disc:["A","T"]},
+ {n:"Giorgia Lupi",S:2,C:3,disc:["F","T"]},{n:"John Maeda",S:3,C:2,disc:["H","S"]},
+ {n:"Issey Miyake",S:3,C:2,disc:["I","E"]},{n:"Jil Sander",S:3,C:1,disc:["G","E"]},
+ {n:"Paula Scher",S:2,C:2,disc:["D","C"]},{n:"Erik Spiekermann",S:2,C:3,disc:["J","E"]},
+ {n:"Philippe Starck",S:2,C:3,disc:["C","E"]},{n:"Lella & Massimo Vignelli",S:2,C:2,disc:["E","C"]}
+];
+const MUSEUMS=[
+ {n:"Museum of Contemporary Art",T:1,E:3},{n:"Science and Technology Museum",T:2,E:2},
+ {n:"Old Masters Gallery",T:2,E:1},{n:"Design Museum",T:1,E:2},{n:"Radio Museum",T:2,E:1},
+ {n:"Natural History Museum",T:3,E:1},{n:"City Museum",T:2,E:2},{n:"Transport Museum",T:1,E:3},
+ {n:"Archaeological Museum",T:3,E:1},{n:"Museum of Everyday Objects",T:2,E:1}
+];
+const OPT=[
+ {k:"A",n:"Field research",cost:{C:1,T:1},ch:[],pp:0,kind:"jolly",eff:"Wild card: after your tester arrives, pick 1 feature. It counts as yours."},
+ {k:"B",n:"Practical materials",cost:{S:1,E:1},ch:["tat","fam"],pp:3},
+ {k:"C",n:"New technologies",cost:{S:2,E:2},ch:["dig"],pp:6,combo:{ch:"soc",pp:2}},
+ {k:"D",n:"Designer network",cost:{C:2,T:1},ch:["soc"],pp:3,combo:{ch:"dig",pp:2}},
+ {k:"E",n:"Curator insights",cost:{C:1,T:1},ch:["loc"],pp:2,combo:{ch:"soc",pp:2}},
+ {k:"F",n:"Museum research",cost:{S:1,T:2},ch:["acc"],pp:3,combo:{ch:"tat",pp:2}},
+ {k:"G",n:"Exclusive patents",cost:{E:1},ch:[],pp:0,kind:"sab",eff:"Sabotage: the 2 nearest teams with Digital pay 1 € (or lose 1 PP). You gain 1 PP per team hit."},
+ {k:"H",n:"Headhunting",cost:{S:1},ch:[],pp:0,kind:"sab",eff:"Sabotage: one nearby team gives you 1 resource of your choice: C, T or €."},
+ {k:"I",n:"Supplier & artisan network",cost:{C:1,T:1,E:1},ch:["tat","loc"],pp:3},
+ {k:"J",n:"Regulatory & certification standards",cost:{S:1,T:1,E:1},ch:["acc","fam"],pp:2}
+];
+const byK=Object.fromEntries(OPT.map(o=>[o.k,o]));
+const SETBACKS=[
+ {n:"Budget cut",fl:"The director has redone the maths.",rule:"Pay 2 €. With Digital, pay 3 €.",f:c=>({pay:{E:c.has("dig")?3:2},bonus:0})},
+ {n:"Creative block",fl:"The ideas have dried up.",rule:"Pay 2 C. With Social, pay only 1 C: the group gets you unstuck.",f:c=>({pay:{C:c.has("soc")?1:2},bonus:0})},
+ {n:"Early opening",fl:"The mayor cuts the ribbon a week early.",rule:"Pay 2 T. With Local, pay nothing: the neighbourhood is already on board. With Digital, +2 PP: the press loves tech.",f:c=>({pay:{T:c.has("loc")?0:2},bonus:c.has("dig")?2:0})},
+ {n:"Production bug",fl:"The software crashes on test day.",rule:"Pay 2 S. With Digital, pay 3 S. With Tactile, pay nothing: no software, no bugs.",f:c=>({pay:{S:c.has("tat")?0:(c.has("dig")?3:2)},bonus:0})},
+ {n:"The scientific board wants a word",fl:"Emergency meeting.",rule:"Pay 1 C and 1 T. With Accessible, +3 PP: approved with honours.",f:c=>({pay:{C:1,T:1},bonus:c.has("acc")?3:0})},
+ {n:"Surprise sponsor",fl:"A foundation believes in your project.",rule:"No cost. +2 PP, or +4 PP with Family-friendly.",f:c=>({pay:{},bonus:c.has("fam")?4:2})}
+];
+const TESTERS=[
+ {n:"The family",d:"Two parents and two kids on a Sunday visit",p:"fam",s:"soc",subj:"the family",need:"a day out everyone can enjoy together"},
+ {n:"Sara",d:"Visually impaired",p:"acc",s:"tat",subj:"Sara",need:"to find her way on her own"},
+ {n:"Lukas",d:"Young tourist who lives on social media",p:"dig",s:"soc",subj:"Lukas",need:"something worth sharing straight away"},
+ {n:"Anne",d:"Local elderly woman, has lived here all her life",p:"loc",s:"acc",subj:"Anne",need:"new stories about her own city"}
+];
+const SCORE={p:10,s:5,n:-5};
+const LEVELS=[{min:13,n:"Cool Idea",g:1},{min:8,n:"Solid Idea",g:.62},{min:-99,n:"Basic Idea",g:.32}];
+
+/* ===================== STATE ===================== */
+const KEY="dd-team-v3";
+const blank=()=>({team:null,name:"",des:"",mus:"",val:{S:0,C:0,T:0,E:0},buys:[],recv:{C:0,T:0,E:0},lost:{C:0,T:0,E:0},sabpp:0,setback:"",tester:"",jolly:""});
+let T=blank();
+try{ const r=JSON.parse(localStorage.getItem(KEY)||"null"); if(r) T=Object.assign(blank(),r); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(T)); }catch(e){} }
+
+/* ===================== HELPERS ===================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pill=c=>`<span class="pill ch-${c}">${CH[c]}</span>`;
+const costHTML=c=>Object.keys(c).filter(r=>c[r]>0).map(r=>`<span class="cost">${c[r]}<i class="${r}" aria-label="${RNAME[r]}">${RSYM[r]}</i></span>`).join(" ");
+const sign=n=>(n>0?"+":n<0?"−":"")+Math.abs(n);
+const num=n=>String(n).replace("-","−");
+const designer=()=>T.des===""?null:DESIGNERS[+T.des];
+const locked=()=>T.setback!=="";
+const dl=(o,t)=>`<span class="dl">${o} Deadline</span>${t}`;
+
+/* ===================== CALCULATION ===================== */
+function effCost(o){ const c=Object.assign({},o.cost), d=designer(); if(d && d.disc[0]===o.k) c[d.disc[1]]=Math.max(0,(c[d.disc[1]]||0)-1); return c; }
+function calc(){
+  const start=RES.reduce((a,r)=>a+T.val[r],0);
+  const ppBase=start>0?Math.min(6,Math.max(1,11-start)):0;   // 7 resources = 4 PP, 8 = 3, 9 = 2
+  const res=Object.assign({},T.val);
+  T.buys.forEach(k=>{ const c=effCost(byK[k]); for(const r in c) res[r]-=c[r]; });
+  ["C","T","E"].forEach(r=>{ res[r]+=T.recv[r]-T.lost[r]; });
+  const chars=new Set(); T.buys.forEach(k=>byK[k].ch.forEach(c=>chars.add(c)));
+  let ppOpt=0, combo=0; T.buys.forEach(k=>{ const o=byK[k]; ppOpt+=o.pp; if(o.combo && chars.has(o.combo.ch)) combo+=o.combo.pp; });
+  const ppInv=ppBase+ppOpt+combo+T.sabpp;
+  let pp=ppInv, sb=null; const after=Object.assign({},res);
+  if(T.setback!==""){
+    const e=SETBACKS[+T.setback].f(chars); let missing=0; const paid={};
+    for(const r in e.pay){ const need=e.pay[r], p=Math.min(need,Math.max(0,after[r])); after[r]-=p; paid[r]=p; missing+=need-p; }
+    pp=ppInv-missing+e.bonus; sb={pay:e.pay,paid,missing,bonus:e.bonus,delta:e.bonus-missing};
+  }
+  const lvl=LEVELS.find(l=>pp>=l.min);
+  let ts=null;
+  if(T.tester!==""){
+    const v=TESTERS[+T.tester], owned=new Set(chars);
+    if(T.jolly && T.buys.includes("A")) owned.add(T.jolly);
+    ts= owned.has(v.p)?{pt:SCORE.p,how:"You own the primary feature",main:1}: owned.has(v.s)?{pt:SCORE.s,how:"Only the secondary feature",main:0}:{pt:SCORE.n,how:"Neither feature",main:0};
+  }
+  const left=RES.reduce((a,r)=>a+Math.max(0,after[r]),0);
+  return {start,ppBase,res,chars,ppOpt,combo,ppInv,sb,pp,lvl,ts,left,total:pp+(ts?ts.pt:0)};   // final score = Project Points + tester points
+}
+function why(o,c){
+  if(T.buys.includes(o.k)) return "";
+  if(locked()) return "Inventory closed after the setback";
+  if(T.des===""||T.mus==="") return "Pick your Designer and Museum first";
+  if(T.buys.length>=4) return "You already have 4 items";
+  if(o.kind==="sab" && T.buys.some(k=>byK[k].kind==="sab")) return "You already have a sabotage";
+  const cost=effCost(o), miss=Object.keys(cost).filter(r=>cost[r]>c.res[r]);
+  return miss.length?"Missing "+miss.map(r=>(cost[r]-Math.max(0,c.res[r]))+" "+RSYM[r]).join(", "):"";
+}
+
+/* ===================== VIEWS ===================== */
+function step(path,val,min,max,label){
+  return `<span class="step"><button type="button" data-step="${path}" data-d="-1" aria-label="Decrease ${label}" ${val<=min?"disabled":""}>−</button><output>${val}</output><button type="button" data-step="${path}" data-d="1" aria-label="Increase ${label}" ${val>=max?"disabled":""}>+</button></span>`;
+}
+function renderJoin(){
+  $("#live").hidden=true; $("#who").textContent="Team sheet";
+  $("#app").innerHTML=`<h1 class="big">Designers<br><em>&amp; Deadlines</em></h1>
+    <p class="lead">Your team sheet. It tracks your cards, purchases and score, and does the maths for you.</p>
+    <div class="h2">Which team are you?</div>
+    <div class="count">${[1,2,3,4,5,6,7,8,9,10].map(k=>`<button type="button" data-team="${k}" aria-pressed="${T.team===k}">${k}</button>`).join("")}</div>
+    <div class="h2">Team name</div>
+    <input type="text" id="tname" maxlength="24" value="${esc(T.name)}" placeholder="Use the name shown on the board">
+    <button type="button" class="btn wide" id="join" ${T.team?"":"disabled"}>Open our sheet</button>
+    <p class="note" style="margin-top:14px">Use one phone per team. Your data stays on this phone.</p>`;
+}
+function render(){
+  if(!T.team || !T._joined){ renderJoin(); return; }
+  const c=calc(), d=designer(), lk=locked();
+  $("#who").textContent=(T.name||("Team "+T.team));
+  $("#live").hidden=false;
+  $("#liveScore").textContent=T.tester!==""?num(c.total):num(c.pp);
+  $("#liveLbl").textContent=T.tester!==""?"final score":"Project Points";
+
+  let h=`<section class="sec"><h2>${dl("1st","Pick your cards")}</h2>
+   <div class="src d"><div class="who"><b>Designer card</b><span>gives you Skill and Collaboration</span></div>
+    <select data-pick="des" aria-label="Designer card" ${lk?"disabled":""}><option value="">Choose your designer</option>${DESIGNERS.map((x,i)=>`<option value="${i}" ${T.des===String(i)?"selected":""}>${i+1}. ${esc(x.n)} (S ${x.S}, C ${x.C})</option>`).join("")}</select>
+    <div class="vals">
+     <div class="val"><span class="letter S">S</span><span class="lbl">Skill</span><span class="fixed">${T.des===""?"–":T.val.S}</span></div>
+     <div class="val"><span class="letter C">C</span><span class="lbl">Collaboration</span><span class="fixed">${T.des===""?"–":T.val.C}</span></div>
+    </div>
+    ${d?`<p class="note" style="margin:8px 0 0">Your discount: item ${d.disc[0]} (${esc(byK[d.disc[0]].n)}) costs one ${RNAME[d.disc[1]]} less.</p>`:""}
+   </div>
+   <div class="src m"><div class="who"><b>Museum card</b><span>gives you Time and Budget</span></div>
+    <select data-pick="mus" aria-label="Museum card" ${lk?"disabled":""}><option value="">Choose your museum</option>${MUSEUMS.map((x,i)=>`<option value="${i}" ${T.mus===String(i)?"selected":""}>${i+1}. ${esc(x.n)} (T ${x.T}, € ${x.E})</option>`).join("")}</select>
+    <div class="vals">
+     <div class="val"><span class="letter T">T</span><span class="lbl">Time</span><span class="fixed">${T.mus===""?"–":T.val.T}</span></div>
+     <div class="val"><span class="letter E">€</span><span class="lbl">Budget</span><span class="fixed">${T.mus===""?"–":T.val.E}</span></div>
+    </div>
+   </div>
+   <div class="startset"><span>Starting set <small>calculated from your cards</small></span><b>${c.start}</b><span>Base PP <small>more resources, fewer points</small></span><b>${c.ppBase}</b></div></section>`;
+
+  h+=`<section class="sec"><h2>Resources left <small>live</small></h2>
+   <div class="res-now">${RES.map(r=>`<div class="${r}"><b>${Math.max(0,c.res[r])}</b><span>${RNAME[r]}</span></div>`).join("")}</div></section>`;
+
+  h+=`<section class="sec"><h2>${dl("2nd","Project Inventory")} <small>${T.buys.length} of 4 items</small></h2>
+   <p class="note" style="margin:-4px 0 10px">What do you need to develop your project?</p><div class="inv">`+
+   OPT.map(o=>{ const own=T.buys.includes(o.k), w=why(o,c);
+     return `<div class="it${own?" own":""}${o.kind==="sab"?" sab":""}"><span class="nm"><span class="k">${o.k}</span>${esc(o.n)}</span>
+      <span>${own?`<button type="button" class="btn alt small" data-unbuy="${o.k}" ${lk?"disabled":""}>Remove</button>`:`<button type="button" class="btn small" data-buy="${o.k}" ${w?"disabled":""}>Add</button>`}</span>
+      <span class="meta">${costHTML(effCost(o))} <span class="ppchip">${o.pp} PP</span> ${o.ch.map(pill).join(" ")}</span>
+      ${o.combo?`<span class="meta combo">Combo: +${o.combo.pp} PP if you own ${CH[o.combo.ch]}</span>`:""}
+      ${o.eff?`<span class="meta combo">${o.eff}</span>`:""}
+      ${w&&!own?`<span class="why">${w}</span>`:""}</div>`; }).join("")+`</div>
+   <details style="margin-top:12px"><summary style="font-weight:700;cursor:pointer">Sabotage effects at closing</summary>
+    <p class="note" style="margin:6px 0 0">Record what you received, gave away, or won and lost in PP.</p>
+    <div class="adj">
+     ${["C","T","E"].map(r=>`<div class="val"><span class="lbl">Received ${RSYM[r]}</span>${step("recv."+r,T.recv[r],0,3,"received "+RNAME[r])}</div>`).join("")}
+     ${["C","T","E"].map(r=>`<div class="val"><span class="lbl">Gave away ${RSYM[r]}</span>${step("lost."+r,T.lost[r],0,T.lost[r]+Math.max(0,c.res[r]),"given "+RNAME[r])}</div>`).join("")}
+     <div class="val"><span class="lbl">PP from sabotage</span>${step("sabpp",T.sabpp,-2,2,"PP from sabotage")}</div>
+    </div></details></section>`;
+
+  h+=`<section class="sec"><h2>Project status</h2>
+   <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${c.chars.size?[...c.chars].map(pill).join(""):'<span class="note">No features yet: add items from the inventory.</span>'}</div>
+   <table class="calc"><tr><td>Base PP</td><td>${c.ppBase}</td></tr><tr><td>Item PP</td><td>${sign(c.ppOpt)}</td></tr><tr><td>Combos</td><td>${sign(c.combo)}</td></tr><tr><td>Sabotage</td><td>${sign(T.sabpp)}</td></tr><tr><td>Setback</td><td>${c.sb?sign(c.sb.delta):"–"}</td></tr><tr class="tot"><td>Project Points</td><td>${num(c.pp)}</td></tr></table>
+   <p style="margin:10px 0 0">Idea level: <span class="level">${c.lvl.n}</span></p></section>`;
+
+  h+=`<section class="sec"><h2>${dl("3rd","Development setback")} <small>shown on the board</small></h2>`;
+  if(T.setback===""){
+    h+=`<p class="note" style="margin-top:0">When the board deals the setbacks, pick yours. This closes your inventory.</p>
+     <select data-pick="setback" aria-label="Your setback" ${(T.des===""||T.mus==="")?"disabled":""}><option value="">Which setback did you get?</option>${SETBACKS.map((x,i)=>`<option value="${i}">${esc(x.n)}</option>`).join("")}</select>`;
+  } else {
+    const m=SETBACKS[+T.setback], x=c.sb, paid=Object.keys(x.pay).filter(r=>x.pay[r]>0).map(r=>`${x.paid[r]} of ${x.pay[r]} ${RSYM[r]}`).join(", ");
+    h+=`<div class="ev"><h3>${m.n}</h3><p class="flav">${m.fl}</p><p class="rule">${m.rule}</p>
+      <div class="out"><span>${paid?"Paid: "+paid:"Nothing to pay"}${x.missing?`<br><span class="minus">Missing ${x.missing}: −${x.missing} PP</span>`:""}${x.bonus?`<br><span class="plus">Bonus +${x.bonus} PP</span>`:""}</span><b class="${x.delta>=0?"plus":"minus"}">${sign(x.delta)} PP</b></div></div>
+      <div class="midcall">${bulb(c.lvl.g)}<div><span>You’ve got an idea!</span><b>${num(c.pp)} PP</b><em>${c.lvl.n}</em></div></div>
+      <p style="margin:8px 0 0"><button type="button" class="btn alt small" data-clear="setback" ${T.tester!==""?"disabled":""}>Wrong card? Change it</button></p>`;
+  }
+  h+=`</section>`;
+
+  h+=`<section class="sec"><h2>${dl("4th","Prototype and Test")} <small>your tester</small></h2>`;
+  if(T.setback===""){ h+=`<p class="wait">Your tester arrives after the setback.</p>`; }
+  else if(T.tester===""){
+    h+=`<select data-pick="tester" aria-label="Your tester"><option value="">Who is testing your prototype?</option>${TESTERS.map((x,i)=>`<option value="${i}">${esc(x.n)}</option>`).join("")}</select>`;
+  } else {
+    const v=TESTERS[+T.tester], x=c.ts;
+    h+=`<div class="ev"><h3>${v.n}</h3><p class="flav">${v.d}</p><p class="rule" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">Primary ${pill(v.p)} Secondary ${pill(v.s)}</p>
+     ${T.buys.includes("A")?`<label style="display:block;margin-bottom:8px"><span class="note">Field research wild card</span><select data-pick="jolly"><option value="">Pick a feature</option>${Object.keys(CH).map(k=>`<option value="${k}" ${T.jolly===k?"selected":""}>${CH[k]}</option>`).join("")}</select></label>`:""}
+     <div class="out"><span>${x.how}</span><b class="${x.pt>=0?"plus":"minus"}">${sign(x.pt)} points</b></div></div>
+     <p style="margin:8px 0 0"><button type="button" class="btn alt small" data-clear="tester">Wrong card? Change it</button></p>`;
+  }
+  h+=`</section>`;
+
+  if(T.tester!==""){
+    h+=`<section class="sec project"><span class="star" aria-hidden="true">★</span><h2 style="font-size:22px">You have turned your idea into a project!</h2>
+      <div class="tallyrow"><span>Project Points</span><b>${num(c.pp)}</b></div>
+      <div class="tallyrow"><span>Tester: ${esc(TESTERS[+T.tester].n)}</span><b>${sign(c.ts.pt)}</b></div>
+      <div class="total"><b>${num(c.total)}</b><span><strong>Final score: count your points!</strong><br>Keep it for the Winner Announcement.</span></div>
+      <p class="note" style="margin:0">Tie-break: ${c.ts.main?"primary feature matched":"primary feature not matched"}, ${num(c.pp)} PP, ${c.left} ${c.left===1?"resource":"resources"} left.</p></section>`;
+  }
+  h+=`<p style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn alt small" data-switch>Change team</button><button type="button" class="btn alt small" data-reset>Start a new game</button></p>`;
+  $("#app").innerHTML=h;
+}
+function bulb(g){
+  return `<svg class="bulbicon" viewBox="0 0 64 88" aria-hidden="true" style="--glow:${g}"><circle class="halo" cx="32" cy="30" r="30"/><path class="glass" d="M32 6c-12.7 0-23 10-23 22.6 0 8.1 4.2 13.6 8.3 18 2.8 3 4.7 6.5 4.7 10.4V60h20v-3c0-3.9 1.9-7.4 4.7-10.4 4.1-4.4 8.3-9.9 8.3-18C55 16 44.7 6 32 6z"/><path class="fil" d="M26 40l3 6 3-6 3 6 3-6"/><rect class="base" x="22" y="62" width="20" height="6" rx="2"/><rect class="base" x="23" y="70" width="18" height="6" rx="2"/><rect class="base" x="27" y="78" width="10" height="5" rx="2.5"/></svg>`;
+}
+
+/* ===================== EVENTS ===================== */
+$("#app").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b||b.disabled) return;
+  if(b.dataset.team){ T.team=+b.dataset.team; const n=$("#tname"); if(n) T.name=n.value; save(); renderJoin(); return; }
+  if(b.id==="join"){ T.name=($("#tname").value||"").trim(); T._joined=true; save(); render(); window.scrollTo(0,0); return; }
+  if(b.dataset.step){ const d=+b.dataset.d, p=b.dataset.step;
+    if(p==="sabpp") T.sabpp=Math.max(-2,Math.min(2,T.sabpp+d)); else { const [a,r]=p.split("."); T[a][r]=Math.max(0,T[a][r]+d); }
+  }
+  else if(b.dataset.buy){ T.buys.push(b.dataset.buy); }
+  else if(b.dataset.unbuy){ T.buys=T.buys.filter(k=>k!==b.dataset.unbuy); if(b.dataset.unbuy==="A") T.jolly=""; }
+  else if(b.dataset.clear){ T[b.dataset.clear]=""; if(b.dataset.clear==="tester") T.jolly=""; }
+  else if(b.hasAttribute("data-switch")){ T._joined=false; save(); renderJoin(); window.scrollTo(0,0); return; }
+  else if(b.hasAttribute("data-reset")){ if(!confirm("Clear this sheet and start a new game?")) return; T=blank(); }
+  else return;
+  save(); render();
+});
+$("#app").addEventListener("input",e=>{
+  const el=e.target;
+  if(el.id==="tname"){ T.name=el.value; save(); }
+});
+$("#app").addEventListener("change",e=>{
+  const el=e.target, k=el.dataset.pick; if(!k) return;
+  if(k==="des"){ T.des=el.value; const d=designer(); T.val.S=d?d.S:0; T.val.C=d?d.C:0; T.buys=[]; T.jolly=""; }
+  else if(k==="mus"){ T.mus=el.value; const m=el.value===""?null:MUSEUMS[+el.value]; T.val.T=m?m.T:0; T.val.E=m?m.E:0; T.buys=[]; T.jolly=""; }
+  else if(k==="setback"){ if(el.value!=="" && !confirm("Confirm this setback? Your inventory will close.")){ el.value=""; return; } T.setback=el.value; }
+  else if(k==="tester"){ T.tester=el.value; }
+  else if(k==="jolly"){ T.jolly=el.value; }
+  save(); render();
+});
+
+render();
+})();
+</script>
+</body>
+</html>
